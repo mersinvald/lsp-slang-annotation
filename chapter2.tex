@@ -21,13 +21,13 @@ The most common illustration of this problem can be found in an average Java
 developer’s set of instruments:
 
 Java code is usually compiled with Sun Java Compiler, which, “being a
-monolithic program, constructed as a ‘black box’”[1], can only accept the input
+monolithic program, constructed as a ‘black box’”\cite{Zouev2005}, can only accept the input
 code and produce optimized JVM byte code.
 \newpage
 Yet a modern development environment includes a set of tools for
 programming assistance and requires advanced language syntax and
 semantics inspection, which is not possible without building a Semantic
-Representation[TODO: another source]. To build it one needs to reimplement core functionality of a
+Representation\cite{Zouev2005}. To build it one needs to reimplement core functionality of a
 compiler.
 
 
@@ -38,10 +38,10 @@ were designed in a very logical way: they haven’t maintained any semantic
 representation of source code, only some low-level internal IR.
 
 
-These compilers’ IRs have very limited set of use cases[1,2], moreover they are
+These compilers’ IRs have very limited set of use cases\cite{Zouev2005, Zouev2010}, moreover they are
 good for the only task: object code generation for several microprocessor
 architectures. Also compiler’s IR is not stable and tends to change very actively
-during compiler development[8]. Hence the internal compiler’s IR can’t really
+during compiler development\cite{FreeSoftwareFoundation2016}. Hence the internal compiler’s IR can’t really
 be used to build good and reliable development tools.
 
 
@@ -49,7 +49,7 @@ The situation is even more frustrating with C++ tooling: the language syntax
 and semantics is a lot more complicated than Java’s, so building a custom
 compiler is a very complex task.
 
-As a result, there is a notable lack of instruments for C++[2], and existing
+As a result, there is a notable lack of instruments for C++\cite{Zouev2010}, and existing
 ones are pretty sophisticated: JetBrains CLion IDE implements its own parser
 and semantic analyzer to build auto-completion, refactoring and static analysis
 tools upon their own C++ SR. Being a complex software product, CLion’s parser
@@ -64,7 +64,7 @@ as a solution separate from VC++ compiler.
 
 \newpage
 
-\section{Modern compilers and SR: a new hope}
+\section{Modern compilers and SR: \\a new hope}
 \label{sec:review_2}
 
 In spite of the fact that traditional compilers are widely used today, their lack of
@@ -72,40 +72,41 @@ IDE integration capabilities were realized long ago and currently a lot of new
 languages are aiming to implement a Semantic Representation as a stable IR
 shared with external tools.
 
-Unlike a traditional compiler IR, Semantic Representation contains a full
+Following \cite{Zouev2005, Zouev2010}, unlike a traditional compiler IR, Semantic Representation contains a full
 knowledge of a program, including the aspects that are implicit in the source
-code.[2] This trait enables some pretty powerful opportunities based on
-semantics analysis[1,2]:
-- Code generation
-- Distributed (or recursive) Validation[2]
-- Human understandable visualization
-- Static analysis
-- Program interpretation
-- Semantic Search: the very powerful technique of querying code semantic
-objects (“find all classes derived from class C that do not override the virtual function
-f”)
+code. This trait enables some pretty powerful opportunities based on
+semantics analysis:
+
+\begin{itemize}
+    \item Code generation
+    \item Distributed (or recursive) Validation
+    \item Human understandable visualization
+    \item Static analysis
+    \item Program interpretation
+    \item Semantic Search: the very powerful technique of querying code semantic objects (“find all classes derived from class C that do not override the virtual function f”)    
+\end{itemize}
 
 There are two main ways to represent an SR and share it with SR clients: to
-provide an access API operating on an SR proprietary binary format[6,8],
-relational database representing a software structure[4], or to output SR as an
-open textual format[7].
+provide an access API operating on an SR (proprietary) binary format \cite{Cannon, FreeSoftwareFoundation2016},
+relational database representing a software structure \cite{Linton1983}, or to output SR as an
+open textual format\cite{TheRustTeam2016}.
 
 “Generally speaking, API is a universal way to implement any required
 functionality, however with changing requirements it’s impossible to predict a
-spectrum of clients’ needs”[1].\\
-And open SP format can be a solution to potential problems: “open formats
+spectrum of clients’ needs”.\\
+And an open SP format can be a solution to potential problems: “open formats
 usually have a lot of access means: from simple APIs to high level specialized
 products. Besides, it’s possible to implement one’s own interfaces to process SR
-represented with open format”[1].
+represented with open format”.\cite{Zouev2005}
 
 A particular format may be something self-designed[7] or a standardized
-solution such as XML[3], or JSON, as an altetnative.[todo]
+solution such as XML\cite{Germon}, or JSON\cite{ECMA-4042013}, as an altetnative.
 
 \section{LSP and distributed approach to building development
 environment}
 \label{sec:review_3}
 
-Concluding the things discussed above, nowadays we have a solid basis to
+Considering the things discussed above, nowadays we have a solid basis to
 provide a good tooling based on semantic analysis: methods to represent
 software source code’s Semantic Representation and evaluate it accordingly to
 clients’ needs.
@@ -124,23 +125,33 @@ any big monolithic architecture, and the solution may be pretty straightforward:
 if we can lower the bonding of the system and represent a development
 environment as a set of tools instead of one integrated solution, we can
 distribute the IDE implementation to have a set of disjointed modules:
-- An editor
-- Compiler to SR
-- SR clients (described in section 1)
-- Protocol between an editor and the language-specific part
+\begin{itemize}
+    \item An editor
+    \item Compiler to SR
+    \item SR clients (described in \ref{sec:review_1})
+    \item Protocol between an editor and the language-specific part
+\end{itemize}
 
-The last one haven’t been introduced yet: the protocol to connect any
-third-party editor to the language infrastructure, achieving a decent IDE-like
-functionality without its maintenance and development costs;
+\newpage
 
-// TODO: picture
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figs/lsp.png}
+    \caption{Language Server Protocol}
+\end{figure}
 
+The last one have not been introduced yet: the protocol to connect any
+third-party tool to the language infrastructure, achieving a decent IDE-like
+functionality without its maintenance and development costs
+   
 Language Server and Language Server Protocol introduced by Microsoft in 2016
 represent a development environment as two disjoint parties:
-- Language Servers to implement all the SR analysis things
-- Clients as editors or other devtools using the LSP to communicate with
-Language Servers [9]
+\begin{itemize}
+    \item Language Servers to implement all the SR analysis things
+    \item Clients as editors or other devtools using the LSP to communicate with Language Servers \cite{Sourcegraph}
+\end{itemize}
 
+\newpage
 \section{Conclusion}
 \label{sec:review_conclusion}
 
@@ -157,7 +168,7 @@ into two sparce parts, linking them via a standardized protocol.
 This approach gives language developers a great opportunity to make use of an
 existing development infrastructure, providing their Language Server for a
 giant set of development tools, as well as a way to fearlessly experiment with new and
-existing analysis techniques, e.g. a Software Knowledge Base[5], described by
+existing analysis techniques, e.g. a Software Knowledge Base\cite{Wanghong}, described by
 Bertrand Meyer, may be implemented as a language server module, as an
 alternative approach to the one selected by the original author in 1985:
 integration of analysis tool into an editor was not possible back then, but this is

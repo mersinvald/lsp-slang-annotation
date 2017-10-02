@@ -9,3 +9,7 @@
 **/*.toc
 **/*.lot
 fonts
+thesis.run.xml
+**/*.gz
+thesis.bcf
+thesis-blx.bib

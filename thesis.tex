@@ -1,4 +1,4 @@
-\documentclass[12pt,twoside]{report}
+\documentclass[10pt,twoside]{report}
 
 %%%%% ADDED TO SUPPORT TT BOLD FACES %%%%
 \DeclareFontShape{OT1}{cmtt}{bx}{n}{<5><6><7><8><9><10><10.95><12><14.4><17.28><20.74><24.88>cmttb10}{}
@@ -14,7 +14,6 @@
 
 \newenvironment{bottompar}{\par\vspace*{\fill}}{\clearpage}
 
-\usepackage{cite}
 \usepackage{amsmath,amsfonts}
 
 \usepackage{amsthm}
@@ -50,6 +49,23 @@
 \usepackage{longtable}
 \usepackage[font=singlespacing, labelfont=bf]{caption}
 \usepackage[parfill]{parskip}
+
+\usepackage[%
+backend=bibtex      % biber or bibtex
+%,style=authoryear    % Alphabeticalsch
+,style=numeric-comp  % numerical-compressed
+,sorting=none        % no sorting
+,sortcites=true      % some other example options ...
+,block=none
+,indexing=false
+,citereset=none
+,isbn=true
+,url=true
+,doi=true            % prints doi
+,natbib=true         % if you need natbib functions
+]{biblatex}
+
+\bibliography{IEEEabrv,thesis}
 
 \usepackage{enumitem}
 \newlist{inlinelist}{enumerate*}{1}
@@ -108,7 +124,6 @@
 
 
 %% REFERENCES
-\bibliographystyle{IEEEtran}
-\bibliography{IEEEabrv,thesis}
-\include{appex}
+\printbibliography
+%\include{appex}
 \end{document}

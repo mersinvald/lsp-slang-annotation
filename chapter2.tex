@@ -23,7 +23,8 @@ developer’s set of instruments:
 Java code is usually compiled with Sun Java Compiler, which, “being a
 monolithic program, constructed as a ‘black box’”\cite{Zouev2005}, can only accept the input
 code and produce optimized JVM byte code.
-\newpage
+
+
 Yet a modern development environment includes a set of tools for
 programming assistance and requires advanced language syntax and
 semantics inspection, which is not possible without building a Semantic
@@ -62,8 +63,6 @@ only for code generation: it is fragmented and very low-level.
 The C\&C++ IntelliSense tooling in Microsoft Visual Studio IDE is implemented
 as a solution separate from VC++ compiler.
 
-\newpage
-
 \section{Modern compilers and SR: \\a new hope}
 \label{sec:review_2}
 
@@ -91,13 +90,13 @@ provide an access API operating on an SR (proprietary) binary format \cite{Canno
 relational database representing a software structure \cite{Linton1983}, or to output SR as an
 open textual format\cite{TheRustTeam2016}.
 
-“Generally speaking, API is a universal way to implement any required
+In accordance to \cite{Zouev2005},``Generally speaking, API is a universal way to implement any required
 functionality, however with changing requirements it’s impossible to predict a
-spectrum of clients’ needs”.\\
-And an open SP format can be a solution to potential problems: “open formats
+spectrum of clients’ needs''.\\
+And an open SP format can be a solution to potential problems: ``open formats
 usually have a lot of access means: from simple APIs to high level specialized
 products. Besides, it’s possible to implement one’s own interfaces to process SR
-represented with open format”.\cite{Zouev2005}
+represented with open format''.
 
 A particular format may be something self-designed[7] or a standardized
 solution such as XML\cite{Germon}, or JSON\cite{ECMA-4042013}, as an altetnative.
@@ -132,8 +131,6 @@ distribute the IDE implementation to have a set of disjointed modules:
     \item Protocol between an editor and the language-specific part
 \end{itemize}
 
-\newpage
-
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{figs/lsp.png}
@@ -157,13 +154,13 @@ represent a development environment as two disjoint parties:
 
 Conventional compilers with a monolithic architecture, that are only good at executable code generation,
 are hard to integrate into a modern development environment as they do not share 
-semantic representation of the source code, thus to develop a good IDE one must write his own 
+semantic representation of the source code, thus to develop a good IDE one must write their own 
 source code to Semantic Representation compiler.
 
-The modern compiler (that do share a high-level intermediate representation) is
+A modern compiler (that does share a high-level intermediate representation) is
 a big step towards simpler language toolings and it can become even more convenient
 combined with a distributed IDE architecture that splits an editor and the language toolchain
-into two sparce parts, linking them via a standardized protocol.
+into two disjoint parts, linking them via a standardized protocol.
 
 This approach gives language developers a great opportunity to make use of an
 existing development infrastructure, providing their Language Server for a

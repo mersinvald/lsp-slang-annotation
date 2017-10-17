@@ -11,17 +11,17 @@ problem: producing fast and effective object code for execution on a virtual
 machine or a microprocessor.
 
 
-However, the other compilers’ capability as developer’s code inspection
+However, the other compilers` capability as developer`s code inspection
 instruments able of providing comprehensive information of code semantics
 remains uncommon and rarely well-developed in the modern compilers of
 popular programming languages.
 
 
 The most common illustration of this problem can be found in an average Java
-developer’s set of instruments:
+developer`s set of instruments:
 
-Java code is usually compiled with Sun Java Compiler, which, “being a
-monolithic program, constructed as a ‘black box’”\cite{Zouev2005}, can only accept the input
+Java code is usually compiled with Sun Java Compiler. ``Being a
+monolithic program, constructed as a `black box`"\cite{Zouev2005}, Sun Java Compiler can only accept the input
 code and produce optimized JVM byte code.
 
 
@@ -32,28 +32,28 @@ Representation\cite{Zouev2005}. To build it one needs to reimplement core functi
 compiler.
 
 
-It’s easy to understand the very reason of the issue looking back to the past:
+It`s easy to understand the very reason of the issue looking back to the past:
 traditionally programs have been considered as mere text objects to be
 converted into an executable code. According to this assumption, compilers
-were designed in a very logical way: they haven’t maintained any semantic
+were designed in a very logical way: they haven`t maintained any semantic
 representation of source code, only some low-level internal IR.
 
 
-These compilers’ IRs have very limited set of use cases\cite{Zouev2005, Zouev2010}, moreover they are
+These compilers` IRs have very limited set of use cases\cite{Zouev2005, Zouev2010}, moreover they are
 good for the only task: object code generation for several microprocessor
-architectures. Also compiler’s IR is not stable and tends to change very actively
-during compiler development\cite{FreeSoftwareFoundation2016}. Hence the internal compiler’s IR can’t really
+architectures. Also compiler`s IR is not stable and tends to change very actively
+during compiler development\cite{FreeSoftwareFoundation2016}. Hence the internal compiler`s IR can`t really
 be used to build good and reliable development tools.
 
 
 The situation is even more frustrating with C++ tooling: the language syntax
-and semantics is a lot more complicated than Java’s, so building a custom
+and semantics is a lot more complicated than Java`s, so building a custom
 compiler is a very complex task.
 
 As a result, there is a notable lack of instruments for C++\cite{Zouev2010}, and existing
 ones are pretty sophisticated: JetBrains CLion IDE implements its own parser
 and semantic analyzer to build auto-completion, refactoring and static analysis
-tools upon their own C++ SR. Being a complex software product, CLion’s parser
+tools upon their own C++ SR. Being a complex software product, CLion`s parser
 tends to have its own misfeatures and a few month implementational lag to
 fully adapt for new standards.
 
@@ -91,32 +91,33 @@ relational database representing a software structure \cite{Linton1983}, or to o
 open textual format\cite{TheRustTeam2016}.
 
 In accordance to \cite{Zouev2005},``Generally speaking, API is a universal way to implement any required
-functionality, however with changing requirements it’s impossible to predict a
-spectrum of clients’ needs''.\\
+functionality, however with changing requirements it`s impossible to predict a
+spectrum of clients` needs''.\\
 And an open SP format can be a solution to potential problems: ``open formats
 usually have a lot of access means: from simple APIs to high level specialized
-products. Besides, it’s possible to implement one’s own interfaces to process SR
+products. Besides, it`s possible to implement one`s own interfaces to process SR
 represented with open format''.
 
 A particular format may be something self-designed[7] or a standardized
 solution such as XML\cite{Germon}, or JSON\cite{ECMA-4042013}, as an altetnative.
 
+\newpage
 \section{LSP and distributed approach to building development
 environment}
 \label{sec:review_3}
 
 Considering the things discussed above, nowadays we have a solid basis to
 provide a good tooling based on semantic analysis: methods to represent
-software source code’s Semantic Representation and evaluate it accordingly to
-clients’ needs.
+software source code`s Semantic Representation and evaluate it accordingly to
+clients` needs.
 
 Modern IDEs apply those methods to deliver a decent service, but still there is a
 problem: those software products use their own implementations of compilers,
-usually proprietary and unrelated to the original language’s development team.
+usually proprietary and unrelated to the original language`s development team.
 It implies a set of problems noted in the \ref{sec:review_1}.
 
 Having a good modern compiler capable of generating an SR makes things a bit
-less complicated but still doesn’t solve the language-specific IDE
+less complicated but still doesn`t solve the language-specific IDE
 implementation time and cost problem.
 
 Obviously, these problems are not unique for the IDE class of products, but for
@@ -133,7 +134,7 @@ distribute the IDE implementation to have a set of disjointed modules:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{figs/lsp.png}
+    \includegraphics[width=0.85\textwidth]{figs/lsp.png}
     \caption{Language Server Protocol}
 \end{figure}
 
@@ -148,7 +149,6 @@ represent a development environment as two disjoint parties:
     \item Clients as editors or other devtools using the LSP to communicate with Language Servers \cite{Sourcegraph}
 \end{itemize}
 
-\newpage
 \section{Conclusion}
 \label{sec:review_conclusion}
 

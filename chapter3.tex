@@ -55,13 +55,81 @@ therefore we can declare this way of integration the most feasible in our case a
     \caption{Workflow with Language Server and integrated compiler}
 \end{figure}
 
-
-\section{Language Server Core Design}
+\section{Language Server Core}
 \label{sec:met:ls_design}
+Language Server Core is a basement level of the Language Server on which Language Server Modules will operate.
+Responsibilities of LS Core include:
+\begin{itemize}
+    \item LS Client connection maintenance
+    \item Module registry maintenance
+    \item Dispatcherisation of incoming requests and data control flow between modules
+\end{itemize}
 
-\section{Language Server Module System Design}
+Each of these responsibilities we shall describe in detail.
+
+\subsection{Client connection maintenance}
+\label{sec:met:ls_design:MaintainConnection}
+According to Language Server Protocol[TODO], client controls the lifetime of a server, 
+i.e starts it and shuts the server down on demand. After startup, client connects to the server
+using one of transports. Since the transport level is not constrained by the LSP, specific transport 
+can vary in different implementations.
+
+Language Server Core should support several transports and be able to work operate on them to accept requests 
+and respond to the client. The list of widely used transports we will implement is
+\begin{itemize}
+    \item stdin/stdout
+    \item tcp
+    \item udp
+\end{itemize}
+Implementing that list will supply the most of LSP clients with an option of how to work with the SLang Language Server.  
+
+\subsection{Module Registry}
+\label{sec:met:ls_design:ModuleRegistry}
+For the extensible modular architecture described in \ref{sec:met:ls_mod} Language Server Core needs to have a subsystem 
+for modules registering, maintenance and their interoperation organization.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\textwidth]{figs/registry.pdf}
+    \caption{Module Regustry API}
+\end{figure}
+
+The registry should register and give module status, as well as information how to launch and connect
+internal (core) and external modules. On startup, registry should initialize it's state using a predefined directory
+containing configuration files. Afterwards, it should maintain an API to load and unload additional modules via LSP.
+Consequently, we need to extend the LSP with an additional commands for the modules registry:
+
+\begin{itemize}
+    \item registryCtl/load
+    \item registryCtl/unload
+    \item registryCtl/status
+\end{itemize}
+
+\subsection{The Dispatcher}
+\label{sec:met:ls_design:RequestsDispatcher}
+Consequently after startup, connection setup, module registering and initialization, 
+Language Server accepts the first request from the client. 
+This request gets validated by Language Server Core, then, after looking up the Module Registry, the request 
+gets handed over to the beginning of processing pipeline, responsible for handling this type of requests.
+
+Basically the dispatcher part is a glue, that connects all Language Server components together and 
+maintains the data flow ``edges" for the modules graph, enabling module interoperation by the
+rules loaded by the Registry and that are discussed further in the section [TODO].
+
+There are simpler alternative approach to organize module interoperation: let the modules send data 
+to each other and organize pipeline as they want. Although peer-to-peer schema here will save a lot of bandwidth, 
+it will also inevitabely lead to the dependency hell, 
+as such approach would require having every module knowing each other and to connect to each other. 
+Thus, here we face the classic client/server tradeoff: we can offload the ``server" (LS Core) only
+if we will complicate ``client" (modules). 
+Since the client side is to be developed by third parties, the simpler it is — the better: 
+server, controlling all data flow will left the module developer only with the business logic implementation tasks. 
+
+\section{Language Server Extensible Architecture}
 \label{sec:met:ls_mod}
-Description of basic Language Server module system design
+The main idea of this research is to bring architecture of Language Servers to the next level,
+make it modular and extensible, thus allowing third parties to throw in additional functionality for the Slang tooling
+with no need to hack the Language Server code.
 
 \subsection{Code Semantic Based Highlights Design}
 \label{sec:met:ls_mod:semhighlight}

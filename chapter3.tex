@@ -209,8 +209,8 @@ are forced to live within the same process with the Language Server due to resou
 
 Hereby, we have two types of modules:
 \begin{itemize}
-    \item Core Modules: embedded into the LS process, exposing the run-time for external modules, can not be overriden.
-    \item External Modules: plugable things, derived from the core modules, can be overriden.
+    \item Core Modules: embedded into the LS process, exposing the run-time for external modules, can not be overridden.
+    \item External Modules: plugable things, derived from the core modules, can be overridden.
 \end{itemize}
 
 \begin{figure}[H]
@@ -233,7 +233,7 @@ Also, each iteration should include unit and integration testing to form a good 
 at the end of the development and to simplify project evolution with use of regression testing.
 
 \subsection{A Dummy Language Server}
-Firtsly the very basic functionality will be implemented: 
+Firstly the very basic functionality will be implemented: 
 \begin{itemize}
     \item accepting the connection
     \item handling a diagnostic request with a hardcoded response
@@ -247,7 +247,7 @@ Firtsly the very basic functionality will be implemented:
 
 \newpage
 \subsection{SR-driven Language Server}
-The next step would be to integrate a compiler and it's Semantic Representetion
+The next step would be to integrate a compiler and it's Semantic Representation
 to feature semantic highlights for the SLang Language Server.
 \begin{figure}[H]
     \centering
@@ -256,9 +256,9 @@ to feature semantic highlights for the SLang Language Server.
 \end{figure}
 
 \subsection{Basic Modular Language Server}
-After all the groundwork with the protocol and compiler interoperation, 
+After all the groundwork with the protocol and compiler inter-operation, 
 modular architecture implementation may be started: without foreign process extensions for now,
-only the built-in modules, operationg in the same address space with the Language Server,
+only the built-in modules, operating in the same address space with the Language Server,
 and the simple registry for them to mock the basement for the future extensible LS.
 
 \begin{figure}[H]
@@ -269,7 +269,7 @@ and the simple registry for them to mock the basement for the future extensible 
 
 \subsection{Extensible Language Server}
 Finally, the last step will be to extend the registry so it would handle configuration files
-and load external modulesa and to extend the inner protocol and API to work with modules, that are operating
+and load external modules and to extend the inner protocol and API to work with modules, that are operating
 in external processes.
 Thus completing the extensible Language Server implementation for SLang.
 

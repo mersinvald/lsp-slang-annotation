@@ -118,7 +118,7 @@ for modules registering, maintenance and their inter-operation organization.
 The registry should register and give module status, as well as information how to launch and connect
 internal (core) and external modules. On startup, registry should initialize it's state using a predefined directory
 containing configuration files. Afterwards, it should maintain an API to load and unload additional modules via LSP.
-Consequently, we need to extend the LSP with an additional commands for the modules registry:
+Consequently, we need to extend the LSP with additional commands for the modules registry:
 
 \begin{itemize}
     \item registryCtl/load
@@ -138,19 +138,19 @@ Basically the dispatcher part is a glue, that connects all Language Server compo
 maintains the data flow ``edges" for the modules graph, enabling module inter-operation by the
 rules loaded into the Registry and that are discussed further in the section \ref{sec:met:arch:ms}.
 
-There are simpler alternative approach to organize module inter-operation: let the modules send data 
+There is a simpler alternative approach to organize module inter-operation: let the modules send data 
 to each other and organize pipeline as they want. Although peer-to-peer schema here will save a lot of bandwidth, 
 it will also inevitably lead to the dependency hell, 
 as such approach would require having every module knowing each other and to connect to each other. 
 Thus, here we face the classic client/server trade-off: we can offload a ``server" (LS Core) only
 if we will complicate a ``client" (modules). 
 Since the client side is to be developed by third parties, the simpler it is -- the better: 
-server, controlling all data flow will left the module developer only with the business logic implementation tasks. 
+server, controlling all data flow will leave the module developer only with the business logic implementation tasks. 
 
 \subsection{Module System}
 \label{sec:met:arch:ms}
 
-Language Server is a great idea do enable IDE-like functionality for
+Language Server is a great idea to enable IDE-like functionality for
 the comparably simple text editors, but currently they are mostly designed as 
 a monolithic software, while their service functions are naturally extensible: 
 e.g it's common for the static analyzer to have modules for different diagnostics.
@@ -162,13 +162,13 @@ from this base module.
 The same logic is applicable to every Language Server service to some extent.
 
 Separation of the monolithic core from the actual functionality implemented through modules
-will significantly lower the Language Server internal bonding, and will make possible
-module implementation relying on a stable API; development of the core and the modules
-simultaneously with no mutual API breakages.
+will significantly lower the Language Server internal bonding, and will make
+module implementation relying on a stable API possible, therefore allowing the core and modules
+development to be performed simultaneously with no mutual API breakages.
 
 Therefore another value of an extensible architecture that we can derive is 
 Language Server easy adoption for any specific corporate needs. 
-As adding additional functionality is as easy as developing a plug-in using 
+As implementing some additional functionality would be as easy as developing a plug-in using 
 the Language Server Modules API, corporate users can extend the Language Server 
 due to their specific requirements, i.e add custom diagnostics, enforce code style, 
 or even hook-up the proprietary static analysis or code generation tools.
@@ -230,7 +230,7 @@ the iterative development plan, that would cover a small self-contained part of 
 in such way that the result of each iteration could be presented as a working product.
 
 Also, each iteration should include unit and integration testing to form a good test coverage
-at the end of the development and to simplify project evolution with use of regression testing.
+at the end of the development and to simplify project evolution through use of regression testing.
 
 \subsection{A Dummy Language Server}
 Firstly the very basic functionality will be implemented: 
@@ -258,8 +258,8 @@ to feature semantic highlights for the SLang Language Server.
 \subsection{Basic Modular Language Server}
 After all the groundwork with the protocol and compiler inter-operation, 
 modular architecture implementation may be started: without foreign process extensions for now,
-only the built-in modules, operating in the same address space with the Language Server,
-and the simple registry for them to mock the basement for the future extensible LS.
+including only built-in modules, that operate in the same address space with the Language Server,
+and the simple registry for them, to mock the basement for the future extensible LS.
 
 \begin{figure}[H]
     \centering

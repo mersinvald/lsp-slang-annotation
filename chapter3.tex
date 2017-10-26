@@ -16,7 +16,7 @@ to perform semantic analysis and consequently provide the editor with usable dat
 As Language server heavily relies on the modern compiler, that exposes the SR, 
 we need to implement a way to integrate compiler into the Language Server and to enable their inter-operation.
 
-There are two possible ways to achieve that: either to use compiler as a library or invoke it in a separate process, 
+There are two possible ways to achieve that: either to use the compiler as a library or invoke it in a separate process, 
 feeding specific command line arguments.
 \begin{table}[H]
     \centering
@@ -41,18 +41,18 @@ feeding specific command line arguments.
 
 Since the SLang\cite{Zouev2017} compiler does not expose any AST traversal API or internal data types, most of 
 the traits specific to an ``integration as a library" option will not be used in our case.
-Moreover, the compiler provides a stable json-formatted SR, which being a text-serialized format, 
+Moreover, the compiler provides a stable JSON-formatted SR, which being a text-serialized format, 
 can be easily transferred via operating system channel like standard output\cite{TheOpenGroup1997}.
 
 This way, we get a number of convenient features: the compiler can be invoked by our Language Server as a command call, we are not limited 
 with any functionality that would require ``compiler as a library" traits, and this option
-is easier to implement on both Language Server and compiler ends.
+is easier to implement on both Language Server and compiler sides.
 Therefore we can declare this way of integration the most feasible in our case and stick to it.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{figs/compiler_integration.png}
-    \caption{Workflow with Language Server and integrated compiler}
+    \caption{Workflow with Language Server and compiler}
 \end{figure}
 
 \section{Language Server Extensible Architecture}
@@ -88,17 +88,15 @@ Each of these responsibilities we shall describe in detail.
 
 \subsubsection{Client connection maintenance}
 \label{sec:met:arch:core:connection_maintenance}
-According to Language Server Protocol\cite{Sourcegraph}, client controls the lifetime of a server, 
-i.e starts it and shuts the server down on demand. After startup, client connects to the server
-using one of transports. Since the transport level is not constrained by the LSP, specific transport 
-can vary in different implementations.
+According to Language Server Protocol\cite{Sourcegraph}, the client controls the lifetime of a server, 
+i.e starts it and shuts the server down on demand. After startup, the client connects to the server
+using one of the transports. Since the transport level is not constrained by the LSP, specific transport can vary in different implementations.
 
-Language Server Core should support several transports and be able to operate on them to accept requests 
-and respond to the client. The list of widely used transports we will implement is
+Language Server Core should support several types of transport and be able to operate on them to accept requests and respond to the client. The list of widely used transports we will implement is
 \begin{itemize}
     \item stdin/stdout
-    \item tcp
-    \item udp
+    \item TCP
+    \item UDP
 \end{itemize}
 Implementing that list will supply the most of LSP clients with an option of how to work with the SLang Language Server.  
 
@@ -116,7 +114,7 @@ for module registering, maintenance and inter-operation organization.
 
 \newpage
 The registry should register and give module status, as well as information on how to launch and connect
-internal (core) and external modules. On startup, registry should initialize its state using a predefined directory
+internal (core) and external modules. On startup, the registry should initialize its state using a predefined directory
 containing configuration files. Afterwards, it should maintain an API to load and unload additional modules via LSP.
 Consequently, we need to extend the LSP with additional commands for the modules registry:
 
@@ -134,12 +132,11 @@ Language Server accepts the first request from the client.
 This request gets validated by Language Server Core, then, after looking up the Module Registry, the request 
 gets handed over to the beginning of processing pipeline responsible for handling this type of requests.
 
-Basically the dispatcher part is a glue, that connects all Language Server components together and 
+Basically, the dispatcher part is a glue, that connects all Language Server components together and 
 maintains the data flow edges for the modules graph, enabling module inter-operation by the
 rules loaded into the Registry and that are discussed further in the section \ref{sec:met:arch:ms}.
 
-There is a simpler alternative approach to module inter-operation organization: let the modules send data 
-to each other and organize pipeline as they want. Although peer-to-peer schema here will save a lot of bandwidth, 
+There is a simpler alternative approach to module inter-operation organization: let the modules send data to each other and organize pipeline as they want. Although peer-to-peer schema here will save a lot of bandwidth, 
 it will also inevitably lead to the dependency hell, 
 as such approach would require having every module knowing each other and connecting to each other. 
 Thus, here we face the classic client/server trade-off: we can offload a ``server" (LS Core) only
@@ -156,9 +153,8 @@ monolithic software, while their service functions are naturally extensible,
 e.g. it is common for a static analyzer to have modules for different diagnostics.
 
 Similarly, one of Language Server functions is to provide an editor with diagnostics: here we can 
-have hierarchy of at least two modules -- the compiler diagnostics and the diagnostics provided by an external static analysis tool.
-We can go even further and implement a static analyzer as a base static analysis module and a bunch of atomic diagnostic modules derived 
-from this base module. 
+have a hierarchy of at least two modules -- the compiler diagnostics and the diagnostics provided by an external static analysis tool.
+We can go even further and implement a static analyzer as a base static analysis module and a bunch of atomic diagnostic modules derived from this base module. 
 The same logic is applicable to every Language Server service to some extent.
 
 Separation of the monolithic core from the actual functionality implemented through modules
@@ -179,8 +175,7 @@ or even hook-up the proprietary static analysis or code generation tools.
     \caption{Module Hierarchy}
 \end{figure}
 
-One of the ways to develop such architecture was already introduced above: the hierarchy of modules, 
-expressed with the basic Object-Oriented Programming terms. In the module hierarchy
+One of the ways to develop such architecture was already introduced above: the hierarchy of modules expressed with the basic Object-Oriented Programming terms. In the hierarchy of modules,
 modules can either override other modules or extend them in a way of post-processing the
 results of base module computation. So the modules would form a classic tree, deriving from a base module,
 and intercepting the data flow.
@@ -194,8 +189,8 @@ and intercepting the data flow.
 Having this as a basement of the modular system architecture, we can derive a 
 neat easy-to-use API to build the modules.
 
-In this thesis we have already introduced a notion of the base and derived modules. Taking as an example the modern Object-Oriented languages` 
-type systems, we can build a hierarchy with the base modules, distributed bundled with the Language Server, and responsible for
+Above we already mentioned the hierarchy of the base and derived modules. Taking as an example the modern Object-Oriented languages` 
+type systems, we can build a system with the base modules, which to be deployed bundled with the Language Server, and responsible for
 one particular LS Protocol method. These modules will mainly provide the basic run-time for all the derived modules: 
 \begin{itemize}
     \item set up data types: the input information, analysis context, and the results.  
@@ -203,14 +198,13 @@ one particular LS Protocol method. These modules will mainly provide the basic r
     \item intercept analysis results of the derived module and send them to the client through LSP.
 \end{itemize}
 
-As one could have figured, it is not really a conventional O-O paradigm inheritance model: core modules do not let 
-the derived ones to override their logic as they work with the Language Server Client and therefore
+As one could have figured, it is not really a conventional O-O paradigm inheritance model: core modules do not let the derived ones to override their logic as they work with the Language Server Client and therefore
 are forced to live within the same process with the Language Server due to resources sharing. 
 
 Hereby, we have two types of modules:
 \begin{itemize}
-    \item Core Modules: embedded into the LS process, exposing the run-time for external modules, can not be overridden.
-    \item External Modules: plugable things, derived from the core modules, can be overridden.
+    \item Core Modules: embedded into the LS process, exposing the run-time for external modules, cannot be overridden.
+    \item External Modules: pluggable things, derived from the core modules, can be overridden.
 \end{itemize}
 
 \begin{figure}[H]
@@ -222,7 +216,7 @@ Hereby, we have two types of modules:
 Summing up, now we have a way to integrate the compiler into the Language Server, powerful extensible architecture,
 that allows to throw in additional functionality for the Language Server, 
 and modules hierarchy to start designing the core modules for the Language Server Protocol methods, as well as
-the external ones to perform actual analysis and supply Language Server Clients with the code insights.
+the external ones to perform actual analysis and supply Language Server Clients with the source code insights.
 
 \section{Development Plan}
 To implement a complex system it is vital to split the work into chunks and introduce
@@ -230,7 +224,7 @@ the iterative development plan, that would cover a small self-contained part of 
 in such a way that the result of each iteration could be presented as a working product.
 
 Also, each iteration should include unit and integration testing to form a good test coverage
-at the end of the development process and to simplify project evolution through use of regression testing.
+at the end of the development process and to simplify project evolution through the use of regression testing.
 
 \subsection{A Dummy Language Server}
 At first, the very basic functionality will be implemented: 

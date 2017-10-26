@@ -44,10 +44,10 @@ the traits specific to an ``integration as a library" option will not be used in
 Moreover, the compiler provides a stable json-formatted SR, which being a text-serialized format, 
 can be easily transferred via operating system channel like standard output\cite{TheOpenGroup1997}.
 
-Thus the compiler can be invoked by our Language Server as a command call, we are not limited 
+This way, we get a number of convenient features: the compiler can be invoked by our Language Server as a command call, we are not limited 
 with any functionality that would require ``compiler as a library" traits, and this option
-is easier to implement on both Language Server and compiler ends,
-therefore we can declare this way of integration the most feasible in our case and stick to it.
+is easier to implement on both Language Server and compiler ends.
+Therefore we can declare this way of integration the most feasible in our case and stick to it.
 
 \begin{figure}[H]
     \centering
@@ -66,7 +66,7 @@ Therefore, the architecture of the SLang Language Server is divided into two agg
     \item The Core
     \item Module System 
 \end{itemize}
-Where the Language Server Core is a framework through which the Modules do operate.
+where the Language Server Core is a framework through which the Modules do operate.
 
 \begin{figure}[H]
     \centering
@@ -106,7 +106,7 @@ Implementing that list will supply the most of LSP clients with an option of how
 \label{sec:met:arch:core:module_registry}
 
 To be a foundation for an extensible modular architecture Language Server Core needs to have a subsystem 
-for modules registering, maintenance and their inter-operation organization.
+for module registering, maintenance and inter-operation organization.
 
 \begin{figure}[H]
     \centering
@@ -115,8 +115,8 @@ for modules registering, maintenance and their inter-operation organization.
 \end{figure}
 
 \newpage
-The registry should register and give module status, as well as information how to launch and connect
-internal (core) and external modules. On startup, registry should initialize it's state using a predefined directory
+The registry should register and give module status, as well as information on how to launch and connect
+internal (core) and external modules. On startup, registry should initialize its state using a predefined directory
 containing configuration files. Afterwards, it should maintain an API to load and unload additional modules via LSP.
 Consequently, we need to extend the LSP with additional commands for the modules registry:
 
@@ -132,32 +132,32 @@ Consequently, we need to extend the LSP with additional commands for the modules
 After startup, connection setup, module registering and initialization, 
 Language Server accepts the first request from the client. 
 This request gets validated by Language Server Core, then, after looking up the Module Registry, the request 
-gets handed over to the beginning of processing pipeline, responsible for handling this type of requests.
+gets handed over to the beginning of processing pipeline responsible for handling this type of requests.
 
 Basically the dispatcher part is a glue, that connects all Language Server components together and 
-maintains the data flow ``edges" for the modules graph, enabling module inter-operation by the
+maintains the data flow edges for the modules graph, enabling module inter-operation by the
 rules loaded into the Registry and that are discussed further in the section \ref{sec:met:arch:ms}.
 
-There is a simpler alternative approach to organize module inter-operation: let the modules send data 
+There is a simpler alternative approach to module inter-operation organization: let the modules send data 
 to each other and organize pipeline as they want. Although peer-to-peer schema here will save a lot of bandwidth, 
 it will also inevitably lead to the dependency hell, 
-as such approach would require having every module knowing each other and to connect to each other. 
+as such approach would require having every module knowing each other and connecting to each other. 
 Thus, here we face the classic client/server trade-off: we can offload a ``server" (LS Core) only
-if we will complicate a ``client" (modules). 
+if we complicate a ``client" (modules). 
 Since the client side is to be developed by third parties, the simpler it is -- the better: 
-server, controlling all data flow will leave the module developer only with the business logic implementation tasks. 
+server, controlling all the data flow, will leave the module developer only with the business logic implementation tasks. 
 
 \subsection{Module System}
 \label{sec:met:arch:ms}
 
 Language Server is a great idea to enable IDE-like functionality for
-the comparably simple text editors, but currently they are mostly designed as 
-a monolithic software, while their service functions are naturally extensible: 
-e.g it's common for the static analyzer to have modules for different diagnostics.
+comparably simple text editors, but currently they are mostly designed as 
+monolithic software, while their service functions are naturally extensible, 
+e.g. it is common for a static analyzer to have modules for different diagnostics.
 
-Similarly, one of Language Server functions is to provide editor with diagnostics: here we can 
-have at least two modules hierarchy -- the compiler diagnostics and the diagnostics provided by an external static analysis tool.
-We can even go further and implement a static analyzer as a base static analysis module and a bunch of atomic diagnostic modules derived 
+Similarly, one of Language Server functions is to provide an editor with diagnostics: here we can 
+have hierarchy of at least two modules -- the compiler diagnostics and the diagnostics provided by an external static analysis tool.
+We can go even further and implement a static analyzer as a base static analysis module and a bunch of atomic diagnostic modules derived 
 from this base module. 
 The same logic is applicable to every Language Server service to some extent.
 
@@ -188,22 +188,22 @@ and intercepting the data flow.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.5\textwidth]{figs/module_tree.pdf}
-    \caption{Modules Tree}
+    \caption{Example Modules Tree}
 \end{figure}
 
 Having this as a basement of the modular system architecture, we can derive a 
 neat easy-to-use API to build the modules.
 
-We have a notion of the base and derived modules. Taking as an example the modern Object-Oriented languages` 
-type systems, we can build a hierarchy with the base modules, distributed with the Language Server, and responsible for
+In this thesis we have already introduced a notion of the base and derived modules. Taking as an example the modern Object-Oriented languages` 
+type systems, we can build a hierarchy with the base modules, distributed bundled with the Language Server, and responsible for
 one particular LS Protocol method. These modules will mainly provide the basic run-time for all the derived modules: 
 \begin{itemize}
     \item set up data types: the input information, analysis context, and the results.  
     \item perform the construction of the context (if applicable).
-    \item intercept analysis results of the derived module and send it to the client through LSP.
+    \item intercept analysis results of the derived module and send them to the client through LSP.
 \end{itemize}
 
-As one could have figured, it is not really a usual O-O inheritance: core modules don't let 
+As one could have figured, it is not really a conventional O-O paradigm inheritance model: core modules do not let 
 the derived ones to override their logic as they work with the Language Server Client and therefore
 are forced to live within the same process with the Language Server due to resources sharing. 
 
@@ -227,13 +227,13 @@ the external ones to perform actual analysis and supply Language Server Clients 
 \section{Development Plan}
 To implement a complex system it is vital to split the work into chunks and introduce
 the iterative development plan, that would cover a small self-contained part of work on each iteration,
-in such way that the result of each iteration could be presented as a working product.
+in such a way that the result of each iteration could be presented as a working product.
 
 Also, each iteration should include unit and integration testing to form a good test coverage
-at the end of the development and to simplify project evolution through use of regression testing.
+at the end of the development process and to simplify project evolution through use of regression testing.
 
 \subsection{A Dummy Language Server}
-Firstly the very basic functionality will be implemented: 
+At first, the very basic functionality will be implemented: 
 \begin{itemize}
     \item accepting the connection
     \item handling a diagnostic request with a hardcoded response
@@ -247,7 +247,7 @@ Firstly the very basic functionality will be implemented:
 
 \newpage
 \subsection{SR-driven Language Server}
-The next step would be to integrate a compiler and it's Semantic Representation
+The next step would be to integrate a compiler and its Semantic Representation
 to feature semantic highlights for the SLang Language Server.
 \begin{figure}[H]
     \centering
@@ -270,8 +270,7 @@ and the simple registry for them, to mock the basement for the future extensible
 \subsection{Extensible Language Server}
 Finally, the last step will be to extend the registry so it would handle configuration files
 and load external modules and to extend the inner protocol and API to work with modules, that are operating
-in external processes.
-Thus completing the extensible Language Server implementation for SLang.
+in external processes, thus completing the extensible Language Server implementation for SLang.
 
 \begin{figure}[H]
     \centering

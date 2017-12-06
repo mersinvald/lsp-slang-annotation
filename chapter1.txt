@@ -1,0 +1,13 @@
+\chapter{Introduction}
+\label{chap:intro}
+\chaptermark{First chapter heading}
+
+Nowadays we have a lot of mature toolkits and integrated development environments for a set of widely used programming languages
+evolved through years to fulfill needs of the most of software development industry.
+
+However, such software products are highly complex and often have a monolithic architecture, usually standalone 
+from the language compiler infrastructure which makes it hard to replace key components or implement support for additional languages.
+
+In this paper we will see how conventional compilers have been architectured and what complications 
+this consequently brought to modern IDE implementations, review the modern approach to compiler construction and implement a flexible 
+distributed integrated development environment with the \\Language Server Protocol, for a multi paradigm SLang\cite{Zouev2017} programming language. 

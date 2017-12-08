@@ -82,7 +82,7 @@ semantics analysis:
     \item Human understandable visualization
     \item Static analysis
     \item Program interpretation
-    \item Semantic Search: the very powerful technique of querying code semantic objects (“find all classes derived from class C that do not override the virtual function f”)    
+    \item Semantic Search: the very powerful technique of querying code semantic objects (“find all classes derived from class C that do not override the virtual function f”)
 \end{itemize}
 
 There are two main ways to represent an SR and share it with SR clients: to
@@ -90,7 +90,7 @@ provide an access API operating on an SR (proprietary) binary format \cite{Canno
 relational database representing a software structure \cite{Linton1983}, or to output SR as an
 open textual format\cite{TheRustTeam2016}.
 
-In accordance to \cite{Zouev2005},``Generally speaking, API is a universal way to implement any required
+In accordance with \cite{Zouev2005},``Generally speaking, API is a universal way to implement any required
 functionality, however with changing requirements it`s impossible to predict a
 spectrum of clients` needs''.\\
 And an open SP format can be a solution to potential problems: ``open formats
@@ -141,7 +141,7 @@ distribute the IDE implementation to have a set of disjointed modules:
 The last one have not been introduced yet: the protocol to connect any
 third-party tool to the language infrastructure, achieving a decent IDE-like
 functionality without its maintenance and development costs
-   
+
 Language Server and Language Server Protocol introduced by Microsoft in 2016
 represent a development environment as two disjoint parties:
 \begin{itemize}
@@ -153,8 +153,8 @@ represent a development environment as two disjoint parties:
 \label{sec:review_conclusion}
 
 Conventional compilers with a monolithic architecture, that are only good at executable code generation,
-are hard to integrate into a modern development environment as they do not share 
-semantic representation of the source code, thus to develop a good IDE one must write their own 
+are hard to integrate into a modern development environment as they do not share
+semantic representation of the source code, thus to develop a good IDE one must write their own
 source code to Semantic Representation compiler.
 
 A modern compiler (that does share a high-level intermediate representation) is

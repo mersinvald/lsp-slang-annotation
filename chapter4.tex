@@ -1,27 +1,23 @@
 \chapter{Implementation}
 \label{chap:impl}
 
-\section{Language Server Design}
-\label{sec:impl:ls_design}
-Design decisions behind language Server, its architecture
+\section{Instruments}
+\label{sec:impl:instruments}
+To not to get drown undertons of work, it was decided to choose an existing OpenSource
+Language server as an implementational basis.
 
-\section{Language Server Implementation}
-\label{sec:impl:ls_impl}
+As the researcher favourite language is Rust, a modern programming language that aims
+to provide zero-cost abstractions, memory and thread safety and blazing speed,
+and provide a decent coding experience at the same
+the only choice of relatively mature LS for basis is the RLS (Rust Language Server).
 
-\subsection{Compiler inter-operation}
-\label{sec:impl:ls_compiler_interop}
-Implementation of compiler inter-operation in language server
-
-\subsection{LSP implementation}
-Implementation of Language Server Protocol
-
-\section{LS Modules}
-\label{sec:impl:ls_mod}
-Description of basic Language Server module design and implementation
-
-\subsection{Semantic Based Highlights}
-\label{sec:impl:ls_mod:semhighlight}
-Description of the semantic based highlights
+After pruning the rust language m dependend code, RLS can speed up implementation process,
+as it is equiped with well-tested basic components:
+\begin{itemize}
+    \item Language Server Protocol implementation
+    \item VFS(Virtual File System)
+    \item convenient API to accept and dispatch LS messages
+\end{itemize}
 
 \subsection{Autocomplete}
 \label{sec:impl:ls_mod:autocomplete}
@@ -33,5 +29,5 @@ Description of documentation generation implementation
 
 \section{Language Server control utility\\ library}
 \label{sec:impl:ls_control_api}
-Description of C ABI LS control library API
-
+Testing and Language Server usage as utility outside from within of client-editor Language Server Protocol client would require
+a CLI tool, that would be able to act like and aditor and provide an appropriate interface to run single or batch tasks.

@@ -6,13 +6,13 @@
 The Language Server idea is to launch the LS instance in the same project directory
 opened in the editor, and connect it to the editor via Language Server Protocol.
 
-A Language Server is responsible for language-specific editor features, 
-it works on the language Semantic Representation and other metadata 
+A Language Server is responsible for language-specific editor features,
+it works on the language Semantic Representation and other metadata
 to perform semantic analysis and consequently provide the editor with usable data in the agreed format via Language Server Protocol.
-As Language server heavily relies on the modern compiler, that exposes the SR, 
+As Language server heavily relies on the modern compiler, that exposes the SR,
 we need to implement a way to integrate compiler into the Language Server and to enable their inter-operation.
 
-There are two possible ways to achieve that: either use the compiler as a library or invoke it in a separate process, 
+There are two possible ways to achieve that: either use the compiler as a library or invoke it in a separate process,
 feeding specific command line arguments.\ref{table:met:compiler_integration}
 \begin{table}[H]
     \centering
@@ -20,7 +20,7 @@ feeding specific command line arguments.\ref{table:met:compiler_integration}
         \hline
         \textbf{invoking as a command} & \textbf{using compiler as a library} \\
         \hline
-        simpler integration & harder integration \\ 
+        simpler integration & harder integration \\
         \hline
         very limited invocation options & complex invocation strategies may be expressed \\
         \hline
@@ -29,20 +29,20 @@ feeding specific command line arguments.\ref{table:met:compiler_integration}
         need to implement IR traversal in the LS & compiler can expose AST traversal API \\
         \hline
         need to describe compiler internal data types in the LS & compiler can expose internal data types \\
-        \hline 
+        \hline
     \end{tabular}
     \caption{Compiler integration methods comparison}
     \label{table:met:compiler_integration}
 \end{table}
 
-Since the SLang\cite{Zouev2017} compiler does not expose any AST traversal API or internal data types, most of 
+Since the SLang\cite{Zouev2017} compiler does not expose any AST traversal API or internal data types, most of
 the traits specific to an ``integration as a library" option will not be used in our case.
-Moreover, the compiler provides a stable JSON-formatted SR, which, being a text-serialized format, 
+Moreover, the compiler provides a stable JSON-formatted SR, which, being a text-serialized format,
 can be easily transferred via an operating system channel like standard output\cite{TheOpenGroup1997}.
 
 This way, we get a number of convenient features: the compiler can be invoked by our Language Server as a command call,this option
-is easier to implement on both Language Server and compiler sides. 
-And since we are not limited with any functionality that would require ``compiler as a library" traits, 
+is easier to implement on both Language Server and compiler sides.
+And since we are not limited with any functionality that would require ``compiler as a library" traits,
 we can declare this way of integration the most feasible in our case and stick to it.\ref{fig:met:compiler_integration}
 
 \begin{figure}[H]
@@ -61,7 +61,7 @@ with no need to hack into the Language Server code.
 Therefore, the architecture of the SLang Language Server is divided into two aggregate components: \ref{fig:met:ls_highlevel_arch}
 \begin{itemize}
     \item The Core
-    \item Module System 
+    \item Module System
 \end{itemize}
 
 \begin{figure}[H]
@@ -85,7 +85,7 @@ Each of these responsibilities we shall describe in detail below.
 
 \subsubsection{Client connection maintenance}
 \label{sec:met:arch:core:connection_maintenance}
-According to the Language Server Protocol\cite{Sourcegraph}, the client controls the lifetime of a server, 
+According to the Language Server Protocol\cite{Sourcegraph}, the client controls the lifetime of a server,
 i.e starts it and shuts the server down on demand. After startup, the client connects to the server
 using one of the transports. Since the transport level is not constrained by the LSP, specific transport can vary in different implementations.
 
@@ -95,12 +95,12 @@ Language Server Core should support several types of transport and be able to op
     \item TCP
     \item UDP
 \end{itemize}
-Implementing that list will supply the most of LSP clients with an option of how to work with the SLang Language Server.  
+Implementing that list will supply the most of LSP clients with an option of how to work with the SLang Language Server.
 
 \subsubsection{Module Registry}
 \label{sec:met:arch:core:module_registry}
 
-To be a foundation for an extensible modular architecture Language Server Core needs to have a subsystem 
+To be a foundation for an extensible modular architecture Language Server Core needs to have a subsystem
 for module registering, maintenance and inter-operation organization.
 
 \begin{figure}[H]
@@ -125,33 +125,33 @@ Consequently, we need to extend the LSP with additional commands for the modules
 \subsubsection{Dispatcher and data flow control}
 \label{sec:met:arch:core:dispatcher}
 
-After startup, connection setup, module registering and initialization, 
-the Language Server accepts the first request from the client. 
-This request gets validated by the Language Server Core, and then, after looking up the Module Registry, the request 
+After startup, connection setup, module registering and initialization,
+the Language Server accepts the first request from the client.
+This request gets validated by the Language Server Core, and then, after looking up the Module Registry, the request
 gets handed over to the beginning of a processing pipeline responsible for handling this type of requests.
 
-The dispatcher part is basically a glue, that connects all Language Server components together and 
+The dispatcher part is basically a glue, that connects all Language Server components together and
 maintains the data flow edges of the modules graph, enabling module inter-operation by the
 rules loaded into the Registry, that are discussed further in the section \ref{sec:met:arch:ms}.
 
-There is a simpler alternative approach to module inter-operation organization: let the modules send data to each other and organize pipeline as they want. 
-Although this peer-to-peer schema here would save a lot of bandwidth, it would also inevitably lead to the dependency hell, 
-as such an approach would require having every module knowing about each other and to be connected to each other. 
+There is a simpler alternative approach to module inter-operation organization: let the modules send data to each other and organize pipeline as they want.
+Although this peer-to-peer schema here would save a lot of bandwidth, it would also inevitably lead to the dependency hell,
+as such an approach would require having every module knowing about each other and to be connected to each other.
 Thus, here we face the classic client/server trade-off: we can offload a ``server" (LS Core) only
-if we complicate a ``client" (modules). 
-Since the client side is to be developed by third parties, the simpler it is -- the better: 
-the server, controlling all the data flow, will leave the module developer only with the business logic implementation tasks. 
+if we complicate a ``client" (modules).
+Since the client side is to be developed by third parties, the simpler it is -- the better:
+the server, controlling all the data flow, will leave the module developer only with the business logic implementation tasks.
 
 \subsection{Module System}
 \label{sec:met:arch:ms}
 
 Language Server is a great idea that enables IDE-like functionality for
-comparably simple text editors, but currently these are mostly designed as 
-a monolithic software, while their service functions are naturally extensible, 
-e.g. it is common for a static analyzer to have modules for different diagnostics, 
-and similarly one of Language Server functions is to provide an editor with diagnostics, so here we can 
+comparably simple text editors, but currently these are mostly designed as
+a monolithic software, while their service functions are naturally extensible,
+e.g. it is common for a static analyzer to have modules for different diagnostics,
+and similarly one of Language Server functions is to provide an editor with diagnostics, so here we can
 have a hierarchy of at least two modules -- the compiler diagnostics and the diagnostics provided by an external static analysis tool.
-We can go even further and implement a static analyzer as a combination of the base static analysis module with a bunch of atomic diagnostic modules derived from this base module. 
+We can go even further and implement a static analyzer as a combination of the base static analysis module with a bunch of atomic diagnostic modules derived from this base module.
 The same logic is applicable to every Language Server service to some extent.
 
 Separation of the monolithic core from the actual functionality implemented through modules
@@ -159,11 +159,11 @@ will significantly lower the Language Server internal bonding, and will make
 module implementation relying on as stable API as possible, therefore allowing the core and modules
 development to be performed simultaneously with no mutual API breakages.
 
-Therefore another benefit of an extensible architecture that we can derive is the 
-Language Server easy adoption for any specific corporate needs. 
-As implementing some additional functionality would be as easy as developing a plug-in using 
-the Language Server Modules API, corporate users can extend the Language Server 
-according to their specific requirements, i.e add custom diagnostics, enforce code style, 
+Therefore another benefit of an extensible architecture that we can derive is the
+Language Server easy adoption for any specific corporate needs.
+As implementing some additional functionality would be as easy as developing a plug-in using
+the Language Server Modules API, corporate users can extend the Language Server
+according to their specific requirements, i.e add custom diagnostics, enforce code style,
 or even hook-up the proprietary static analysis or code generation tools.
 
 \begin{figure}[H]
@@ -173,7 +173,7 @@ or even hook-up the proprietary static analysis or code generation tools.
     \label{fig:met:module_hierarchy}
 \end{figure}
 
-One of the ways to develop such architecture has already been introduced above: the hierarchy of modules expressed with the basic Object-Oriented Programming terms\ref{fig:met:module_hierarchy}. 
+One of the ways to develop such architecture has already been introduced above: the hierarchy of modules expressed with the basic Object-Oriented Programming terms\ref{fig:met:module_hierarchy}.
 In this hierarchy, modules can either override other modules or extend them in a way of post-processing the
 results of the base module computation. So the modules would form a classic tree, deriving from a base module,
 and intercepting the data flow. The example of such a module hierarchy is illustrated in the figure \ref{fig:met:module_tree}
@@ -185,11 +185,11 @@ and intercepting the data flow. The example of such a module hierarchy is illust
     \label{fig:met:module_tree}
 \end{figure}
 
-We already mentioned the hierarchy of the base and derived modules above. Taking the modern Object-Oriented languages` 
+We already mentioned the hierarchy of the base and derived modules above. Taking the modern Object-Oriented languages`
 type systems as an example, we can build a system with the base modules, which are to be deployed bundled with the Language Server and responsible for
-one particular LS Protocol method each. These modules will mainly provide the basic runtime for all the derived modules: 
+one particular LS Protocol method each. These modules will mainly provide the basic runtime for all the derived modules:
 \begin{itemize}
-    \item set up data types: the input information, analysis context, and the results.  
+    \item set up data types: the input information, analysis context, and the results.
     \item perform the construction of the context (if applicable).
     \item intercept analysis results of the derived module and send them to the client through LSP.
 \end{itemize}
@@ -211,7 +211,7 @@ Hereby, we have two types of modules:
 \end{figure}
 
 Summing up, now we have a way to integrate the compiler into the Language Server, powerful extensible architecture
-that allows to throw in additional functionality for the Language Server, 
+that allows to throw in additional functionality for the Language Server,
 and modules hierarchy to start designing the core modules for the Language Server Protocol methods, as well as
 the external ones to perform actual analysis and supply Language Server Clients with the source code insights.
 
@@ -231,7 +231,7 @@ The next step would be to integrate the compiler and the language Semantic Repre
 to feature ``jump to definition" for the SLang Language Server.
 
 \textbf{Basic Modular Language Server}\\
-After all the groundwork with the protocol and compiler inter-operation, 
+After all the groundwork with the protocol and compiler inter-operation,
 modular architecture implementation may be started: without foreign process extensions for now,
 including only built-in modules, that operate in the same address space with the Language Server,
 and the simple registry for them, to mock the basement for the future extensible LS.
@@ -239,12 +239,12 @@ and the simple registry for them, to mock the basement for the future extensible
 \textbf{Extensible Language Server}\\
 Finally, the last step is to extend the registry so it would handle configuration files
 and load external modules and to extend the inner protocol and API to work with modules that are operating
-in external processes, thus completing the extensible Language Server implementation for SLang. 
-The final architecture after this stage is illustrated in the figure \ref{fig:met:final_architecture} 
+in external processes, thus completing the extensible Language Server implementation for SLang.
+The final architecture after this stage is illustrated in the figure \ref{fig:met:final_architecture}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.5\textwidth]{figs/ls_iteration_4.pdf}
+    \includegraphics[width=.55\textwidth]{figs/ls_iteration_4.pdf}
     \caption{Final architecture}
     \label{fig:met:final_architecture}
 \end{figure}
@@ -261,14 +261,14 @@ The SLang is using a json-formated SR with an object hierarchy described in the 
 \subsection{SLang Semantic Representation format}
 
 Slang has three scoping components: Unit, Block and Routine, where any nesting order is valid.
-Each of these components has шеы context with encapsulated members as an array to 
+Each of these components has шеы context with encapsulated members as an array to
 keep the consistent order:
 
 \begin{lstlisting}
 {
     "type": "Unit",
     "context": [
-        { 
+        {
             "type": "Routine",
             "context": [
                 "type": "Block",
@@ -288,18 +288,18 @@ metadata and semantics extracted from the source code:
     \item \textbf{name}: the program-specified name of a specific program entity (variable, routine, etc.), optional.
     \item \textbf{id}:   unique entity identifier, used for SR internal referencing.
     \item \textbf{ref}:  internal SR reference to an \textbf{id}, used for referencing the parent unit, variable definitions, etc.
-    \item \textbf{span}: text locator of the entity containing the start and the end positions represented as a line:column pair. 
+    \item \textbf{span}: text locator of the entity containing the start and the end positions represented as a line:column pair.
     \item \textbf{signature}: the routine special case field containing the routine signature as input and output contexts.
 \end{itemize}
 
 The meaning of each of these fields is implementation-defined and their semantics rely on the entity type they are contained within.
-For instance, for a \texti{Unit} type, the \texti{ref} field will be pointing to a parent \texti{Unit}, 
+For instance, for a \texti{Unit} type, the \texti{ref} field will be pointing to a parent \texti{Unit},
 and for a \texti{Var} within an \texti{Expr} entity the \texti{ref} field will be a reference to this particular variable definition.
 Thus we can avoid lengthy SR leaf definition in the Language Server code saving all the important semantics.
 
 \subsection{Jump to definition}
 
-The most basic developer tool as well as the most basic toolset part is a \texti{jump to definition} command. 
+The most basic developer tool as well as the most basic toolset part is a \texti{jump to definition} command.
 Basically it helps the developer to instantly open the file and the line with the definition of some code entity used in the source code.
 
 To implement this part of the Language Server via analysis of SR, only three of its components are necessary:
@@ -312,12 +312,12 @@ To implement this part of the Language Server via analysis of SR, only three of 
 
 \subsection{Code completion}
 
-Another very common instrument in a developer toolbox is autocompletion, provided by an IDE. 
+Another very common instrument in a developer toolbox is autocompletion, provided by an IDE.
 In our case the provision of an autocompletion is on the Language Server.
 
-The most usual case of autocompletion usage is navigation among the encapsulated class (or \texti{Unit}) members, where autocompletion 
-can provide user with the useful suggestions on the names of these members and their types. 
-Using the recursive \texti{jump to definition} search, we can find a scope with the members to be suggested, read theit metadata 
+The most usual case of autocompletion usage is navigation among the encapsulated class (or \texti{Unit}) members, where autocompletion
+can provide user with the useful suggestions on the names of these members and their types.
+Using the recursive \texti{jump to definition} search, we can find a scope with the members to be suggested, read theit metadata
 and present it to a user in a readable format.
 
 % \section{Basic Language Server Modules}

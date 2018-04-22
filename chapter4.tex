@@ -123,7 +123,7 @@ pub trait Params: serde::Serialize + serde::Deserialize<'static> {}
 pub trait Response: serde::Serialize + serde::Deserialize<'static> {}
 \end{minted}
 This basically means that anything that can be serialized and deserialized in an arbitary format
-supported by serde-rs\ref{crates::serde}, can be a module argument or a module return type.
+supported by serde-rs, can be a module argument or a module return type.
 These are just convenience flag-traits, that do now provide their own methods.
 
 Consequetively, there should be a data type that implements one of those traits (or both).

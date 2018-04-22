@@ -20,15 +20,15 @@ feeding specific command line arguments.\ref{table:met:compiler_integration}
         \hline
         \textbf{invoking as a command} & \textbf{using compiler as a library} \\
         \hline
-        simpler integration & harder integration \\
+        \makecell{simpler integration} & \makecell{harder integration} \\
         \hline
-        very limited invocation options & complex invocation strategies may be expressed \\
+        \makecell{very limited invocation options} & \makecell{complex invocation strategies \\ may be expressed} \\
         \hline
-        need to (de)serialize data & can exchange binary data \\
+        \makecell{need to (de)serialize data} & \makecell{can exchange binary data} \\
         \hline
-        need to implement IR traversal in the LS & compiler can expose AST traversal API \\
+        \makecell{need to implement IR traversal \\ in the LS} & \makecell{compiler can expose \\AST traversal API} \\
         \hline
-        need to describe compiler internal data types in the LS & compiler can expose internal data types \\
+        \makecell{need to describe compiler \\ internal data types in the LS} & \makecell{compiler can expose \\ internal data types} \\
         \hline
     \end{tabular}
     \caption{Compiler integration methods comparison}
@@ -261,7 +261,7 @@ The SLang is using a json-formated SR with an object hierarchy described in the 
 \subsection{SLang Semantic Representation format}
 
 Slang has three scoping components: Unit, Block and Routine, where any nesting order is valid.
-Each of these components has шеы context with encapsulated members as an array to
+Each of these components has its context with encapsulated members as an array to
 keep the consistent order:
 
 \begin{lstlisting}
@@ -293,13 +293,13 @@ metadata and semantics extracted from the source code:
 \end{itemize}
 
 The meaning of each of these fields is implementation-defined and their semantics rely on the entity type they are contained within.
-For instance, for a \texti{Unit} type, the \texti{ref} field will be pointing to a parent \texti{Unit},
-and for a \texti{Var} within an \texti{Expr} entity the \texti{ref} field will be a reference to this particular variable definition.
+For instance, for a \textbf{Unit} type, the \textbf{ref} field will be pointing to a parent \textbf{Unit},
+and for a \textbf{Var} within an \textbf{Expr} entity the \textbf{ref} field will be a reference to this particular variable definition.
 Thus we can avoid lengthy SR leaf definition in the Language Server code saving all the important semantics.
 
 \subsection{Jump to definition}
 
-The most basic developer tool as well as the most basic toolset part is a \texti{jump to definition} command.
+The most basic developer tool as well as the most basic toolset part is a \textbf{jump to definition} command.
 Basically it helps the developer to instantly open the file and the line with the definition of some code entity used in the source code.
 
 To implement this part of the Language Server via analysis of SR, only three of its components are necessary:
@@ -315,9 +315,9 @@ To implement this part of the Language Server via analysis of SR, only three of 
 Another very common instrument in a developer toolbox is autocompletion, provided by an IDE.
 In our case the provision of an autocompletion is on the Language Server.
 
-The most usual case of autocompletion usage is navigation among the encapsulated class (or \texti{Unit}) members, where autocompletion
+The most usual case of autocompletion usage is navigation among the encapsulated class (or \textbf{Unit}) members, where autocompletion
 can provide user with the useful suggestions on the names of these members and their types.
-Using the recursive \texti{jump to definition} search, we can find a scope with the members to be suggested, read theit metadata
+Using the recursive \textbf{jump to definition} search, we can find a scope with the members to be suggested, read theit metadata
 and present it to a user in a readable format.
 
 % \section{Basic Language Server Modules}

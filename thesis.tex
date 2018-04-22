@@ -1,10 +1,10 @@
-\documentclass[10pt,twoside]{report}
-\usepackage[a4paper, total={6in, 8in}]{geometry}
+\documentclass[twoside]{report}
+%\usepackage[a4paper, total={6in, 8in}]{geometry}
 
 %%%%% ADDED TO SUPPORT TT BOLD FACES %%%%
 \DeclareFontShape{OT1}{cmtt}{bx}{n}{<5><6><7><8><9><10><10.95><12><14.4><17.28><20.74><24.88>cmttb10}{}
 \renewcommand{\ttdefault}{pcr}
-%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{atbegshi,picture}
 \AtBeginShipout{\AtBeginShipoutUpperLeft{%
   \put(\dimexpr\paperwidth-1cm\relax,-1.5cm){\makebox[0pt][r]{\includegraphics[width=3cm]{figs/inno.jpg}}}%
@@ -41,7 +41,7 @@
 \usepackage{fancyheadings}
 \usepackage{color}
 
-\usepackage{upgreek} 
+\usepackage{upgreek}
 \usepackage{bm}
 \usepackage{hyperref}
 \usepackage{setspace}
@@ -50,6 +50,11 @@
 \usepackage{longtable}
 \usepackage[font=singlespacing, labelfont=bf]{caption}
 \usepackage[parfill]{parskip}
+
+\usepackage[utf8]{inputenc}
+\usepackage{makecell}
+
+\usepackage{minted}
 
 \usepackage[%
 backend=bibtex      % biber or bibtex
@@ -98,7 +103,7 @@ backend=bibtex      % biber or bibtex
 
 \newcommand{\dedication}[1]
    {\thispagestyle{empty}
-     
+
    \begin{flushleft}\raggedleft #1\end{flushleft}
 }
 
@@ -128,8 +133,11 @@ backend=bibtex      % biber or bibtex
 \include{chapter5}
 \include{chapter6}
 
-
 %% REFERENCES
+\newpage
 \printbibliography
-%\include{appex}
+
+\newpage
+\include{appendix_a}
+\include{acknowledgements}
 \end{document}

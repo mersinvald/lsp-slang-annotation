@@ -1,14 +1,55 @@
 \chapter{Evaluation and Discussion}
 \label{chap:eval}
 
-Recap of thesis subject
+The implementation of Akkadia is compliant with \textbf{jsonrpc} standard
+used in the Language Server Protocol as it inherits the implementation
+from Rust Language Server.
 
-LSP standard complaisance testing
+Language Server Protocol includes a list of request methods that Language Server can
+or should handle. Akkadia Core has an implementation to handle file notifications
+to update its internal Virtual File System and the mandatory service methods:
+\begin{itemize}
+\item ExitNotification
+\item Initialized
+\item DidOpen
+\item DidChange
+\item Cancel
+\item DidSave
+\item DidChangeWatchedFiles
+\item ShutdownRequest
+\item InitializeRequest
+\end{itemize}
 
-Performance testing
+The other methods suck as the implemented \textbf{Completion} and are to be impelemted
+as the connectable \textbf{modules}.
+Module System was implemented to fully support the modular approach described in the Methodology,
+except the configuration files and the on-the-fly module integration.
 
-Estimation of developement cost of the full-featured IDE for SLang, comparing that with time and cost of Language Server Implementation
+The other Language Server methods responsible of extending code analysis capabilities of an editor
+are to be implemented as a further work, namely
+\begin{itemize}
+\item DidChangeConfiguration
+\item GoToDefinition
+\item ShowReferences
+\item Rename
+\item FindImpementations,
+\item ShowSymbols
+\item Formatting,
+\item RangeFormatting,
+\end{itemize}
+This can be done in any language that supports JSON encoding.
 
-Discussion of future development opportunities
+Also, continuing on module system, it may be extended by providing more auxillary data to the modules,
+via allowing them to have an internal storage in the \textbf{State} structure, to improve dependent (via inheritance)
+modules interoperation capabilities.
+This way Akkadia could support many languages as it was planned initially, via providing the `Core' language modules,
+responsible for compiler integration, that would store the Semantic Representation in this additional storage, for the use of the modules
+that inherit from the core language module.
 
-\ldots
+Considering the speed of execution, the current `naive' implementation of the module IPC may be improved through
+the use of shared memory where it is appropriate. This way there wouldn't be performance losses on transmitting huge data structures
+such as the Virtual File System.
+
+The major achievement of the Akkadia architecture and implementation is an easy to use \textbf{Module System},
+that is extendable without any Rust or any other language-specific instruments, libraries, or input-output method limitations
+hence is providing great flexibility.

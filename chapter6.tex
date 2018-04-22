@@ -1,10 +1,27 @@
 \chapter{Conclusion}
 \label{chap:conclusion}
 
-Recap
+Language Server is a new way to bring modularity and extensive code reuse into
+modern integrated development toolsets, that employs language`s compiler to
+perform code analysis.
+
+With the architecture described in this thesis, this modularity may be brought to
+the next level, allowing to inject virtually any analysis, statistical, or other
+tools into the Language Server, making it possible to extend simple code editors
+up to a point of building very powerful toolsets. Also this approach to building
+a Language Server can make the concept of LS agile enough to make it an
+easy to use instrument for enterprise users, who are tending to have a lot of specific
+internal tools, which may be now incorporated into the Language Server itself.
+
+From the perspective of a programming language developer, Language Server allows to
+rapidly bootstrap a ready-to-use environment of different code editors supporting
+the inspection tools for this new language.
+
+The Language Server approach allows to reduce time and cost of development of the language support
+in major editors and IDEs at least by the cost of implementing a parser, as it is reused
+from the compiler. Additionaly one Language Server implementation can support a variety of
+different editors, while a plugin is usually able to provice a language support only for a single editor or IDE.
 
 Concluding, the Language Server may be considered to be the most feasible
-solution to rapidly bootstrap rich development infrastructure for aspiring new
-languages, with a broad path to evolve further.
-
-\ldots
+solution to make a rich development infrastructure for aspiring new
+languages, with a broad path to evolve further through the introduced module system.

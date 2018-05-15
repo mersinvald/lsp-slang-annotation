@@ -1,130 +1,115 @@
-\chapter{Literature Review}
+\chapter{Обзор литературы}
 \label{chap:lr}
-\chaptermark{Second Chapter Heading}
+\chaptermark{Обзор литературы}
 
-\section{Conventional compilers in the modern world}
+\section{Традиционная архитектура компиляторов}
 \label{sec:review_1}
 
-Since the middle of $20^{th}$ century researchers and the industry have done a great
-work in compilers development focusing on the main goal of classic compilation
-problem: producing fast and effective object code for execution on a virtual
-machine or a microprocessor.
+С середины $20^{го}$ века исследования и индустрия разработки ПО сделали большой прорыв
+в разработке компиляторов с акцентом на классическую задачу компиляции: 
+создание быстрого и эффективного объектного кода для выполнения на виртуальной
+машине или микропроцессоре.
 
 
-However, the other compilers` capability as developer`s code inspection
-instruments able of providing comprehensive information of code semantics
-remains uncommon and rarely well-developed in the modern compilers of
-popular programming languages.
+Однако другие возможности компиляторов, такие как инструменты анализа кода, 
+способные предоставлять исчерпывающую информацию о семантике программного кода,
+остается необычным и редким качествои современных компиляторов для популярных языков программирования.
+
+Наиболее наглядно эту проблему можно наблюдать в инструментах разработки для Java:
+
+Код Java обычно компилируется с использованием компилятора Sun Java. "Будучи
+монолитной программой, построенная по принципу ``черного ящика" \cite{Zouev2005}, 
+Sun Java свособен лишь принять программный и сгенерировать из него байткод для виртуальной машины Java.
 
 
-The most common illustration of this problem can be found in an average Java
-developer`s set of instruments:
-
-Java code is usually compiled with Sun Java Compiler. ``Being a
-monolithic program, constructed as a `black box`"\cite{Zouev2005}, Sun Java Compiler can only accept the input
-code and produce optimized JVM byte code.
+В то же время современная среда разработки включает в себя набор инструментов,
+упрощающих работу программиста, и требует предварительного анализа синтаксиса и семантики кода, 
+что не представляется возможным без построения Семантического Представления\cite{Zouev2005}. 
+Построение такого представления требует реализовать основную функциональность компилятора заного.
 
 
-Yet a modern development environment includes a set of tools for
-programming assistance and requires advanced language syntax and
-semantics inspection, which is not possible without building a Semantic
-Representation\cite{Zouev2005}. To build it one needs to re-implement core functionality of a
-compiler.
+Глядя в прошлое, легко понять причины этой проблемы: 
+традиционно программы рассматривались как простые текстовые объекты
+преобразующиеся в исполняемый код. Согласно этому предположению, компиляторы
+были спроектированы очень логично: они не не хранили никакой информации о семантике исходного кода, 
+помимов некоторых низкоуровневых внутренних промежуточных представлений.
 
 
-It`s easy to understand the very reason of the issue looking back to the past:
-traditionally programs have been considered as mere text objects to be
-converted into an executable code. According to this assumption, compilers
-were designed in a very logical way: they haven`t maintained any semantic
-representation of source code, only some low-level internal IR.
+Промежуточные представления этих компиляторов имели очень ограниченный набор вариантов использования \cite{Zouev2005, Zouev2010}, более того, они
+хорошо подходили для единственной задачи: генерации объектного кода для числа поддерживаемых микропроцессоров. 
+Также внутреннее представление компилятора нестабильно и имеет тенденцию очень активно меняться
+во время разработки компилятора \cite{FreeSoftwareFoundation2016}. Следовательно, внутреннее представление компилятора не может 
+быть использовано для построения средств анализа кода.
+
+Ситуация с инструментарием C++ еще более удручающая: синтаксис языка
+и семантика намного сложнее, чем у Java, поэтому создание альтернативного
+компилятора --- весьма непростая задача даже для большого бизнеса.
+
+В результате мы можем наблюдаеть заметный недостаток инструментов для C++\cite{Zouev2010}, а существующие
+довольно сложны в реализации: среда разработки JetBrains CLion имеет собственный парсер
+и семантический анализатор для реализации функций автодополнения, рефакторинга и статического анализа,
+основанные на собственном семантическом представлении языка C++. 
+Будучи сложным программным продуктом, парсер CLion, как правило, имеет собственные недостатки и 
+отстает от развития языка на несколько месяцев после выхода нового стандарта.
 
 
-These compilers` IRs have very limited set of use cases\cite{Zouev2005, Zouev2010}, moreover they are
-good for the only task: object code generation for several microprocessor
-architectures. Also compiler`s IR is not stable and tends to change very actively
-during compiler development\cite{FreeSoftwareFoundation2016}. Hence the internal compiler`s IR can`t really
-be used to build good and reliable development tools.
+Microsoft Visual Studio "страдает" от той же проблемы: VC++ генерирует промежуточное представление, пригодное
+только для генерации кода: внутреннее представление сильно фрагментировано и очень низкоуровнево.
+Набор инструментов C\&C++ IntelliSense в интегрированной среде разработки Microsoft Visual Studio 
+полностью отделен от компилятора VC++ и реализует свой собственный парсер и семантический анализатор.
 
-
-The situation is even more frustrating with C++ tooling: the language syntax
-and semantics is a lot more complicated than Java`s, so building a custom
-compiler is a very complex task.
-
-As a result, there is a notable lack of instruments for C++\cite{Zouev2010}, and existing
-ones are pretty sophisticated: JetBrains CLion IDE implements its own parser
-and semantic analyzer to build auto-completion, refactoring and static analysis
-tools upon their own C++ SR. Being a complex software product, CLion`s parser
-tends to have its own misfeatures and a few month implementational lag to
-fully adapt for new standards.
-
-
-Microsoft Visual Studio “suffers” from this too: VC++ generates IR that is useful
-only for code generation: it is fragmented and very low-level.
-The C\&C++ IntelliSense tooling in Microsoft Visual Studio IDE is implemented
-as a solution separate from VC++ compiler.
-
-\section{Modern compilers and SR: \\a new hope}
+\section{Современные компиляторы и СП}
 \label{sec:review_2}
 
-In spite of the fact that traditional compilers are widely used today, their lack of
-IDE integration capabilities were realized long ago and currently a lot of new
-languages are aiming to implement a Semantic Representation as a stable IR
-shared with external tools.
+Несмотря на то, что традиционные компиляторы сегодня широко используются, их
+возможности по интеграции в среды разработки давно исчерпаны и всё больше новых языков сейчас
+нацелены на реализацию семантического представления как стабильного промежуточного представления,
+которое можно использовать во внешних инструментах семантического анализа.
 
-Following \cite{Zouev2005, Zouev2010}, unlike a traditional compiler IR, Semantic Representation contains a full
-knowledge of a program, including the aspects that are implicit in the source
-code. This trait enables some pretty powerful opportunities based on
-semantics analysis:
+Согласно \cite{Zouev2005, Zouev2010}, в отличие от промежуточного представления традиционного компилятора, 
+семантическое представление содержит полный спектр ``знаний'' о программе, и включает в себя все аспекты, которые подразумеваются 
+в исходном коде. Это дает возможность строить мощные инструменты, основанные на семантическом анализе.
 
 \begin{itemize}
-    \item Code generation
-    \item Distributed (or recursive) Validation
-    \item Human understandable visualization
-    \item Static analysis
-    \item Program interpretation
-    \item Semantic Search: the very powerful technique of querying code semantic objects (“find all classes derived from class C that do not override the virtual function f”)
+\item генерация кода
+\item распределенная (или рекурсивная) проверка синтаксиса
+\item человекопонятная визуализация
+\item статический анализ
+\item интерпретация программы
+\item Семантический поиск: очень мощный метод запроса семантических объектов кода (пример: "найти все классы, производные от класса C, которые не переопределяют виртуальную функцию f”)
 \end{itemize}
 
-There are two main ways to represent an SR and share it with SR clients: to
-provide an access API operating on an SR (proprietary) binary format \cite{Cannon, FreeSoftwareFoundation2016},
-relational database representing a software structure \cite{Linton1983}, or to output SR as an
-open textual format\cite{TheRustTeam2016}.
+Существует три основных пути описания семантического представления и предоставления доступа к нему извне:
+предоставление доступа к программному интерфейсу, который реализует доступ и модицикацию элементов семантического представления\cite{Cannon, FreeSoftwareFoundation2016}
+отображение семантического представления на реляционную базу данных\cite{Linton1983},
+и предоставление доступа к семантическому представлению в виде текста, используя открытый формат структурирования данных\cite{TheRustTeam2016}.
 
-In accordance with \cite{Zouev2005},``Generally speaking, API is a universal way to implement any required
-functionality, however with changing requirements it`s impossible to predict a
-spectrum of clients` needs''.\\
+Цитируя \cite{Zouev2005}, ``API является универсальным способом реализации любой требуемой функциональности, 
+но в условиях меняющихся требований, невозможно предугадать спектр потребностей клиентов''.
+Открытый формат семантического представления, в свою очередь может стать решением потенциальной проблемы: ``Обычно доступ к открытому формату можно получить несколькими способами:
+от простых API до высокоуровневых специалилированных программных продуктов. Кроме того, возможна реализация собственных инстерфейсов обработки семантического представления, выраженного в открытом формате''
 And an open SP format can be a solution to potential problems: ``open formats
-usually have a lot of access means: from simple APIs to high level specialized
-products. Besides, it`s possible to implement one`s own interfaces to process SR
-represented with open format''.
 
-A particular format may be something self-designed[7] or a standardized
-solution such as XML\cite{Germon}, or JSON\cite{ECMA-4042013}, as an alternative.
+Конкретным форматом может являться как нечто собственной разработки, так и унифицированное стандартное решение, 
+такое как XML\cite{Germon} или JSON\cite{ECMA-4042013}.
 
 \newpage
-\section{LSP and distributed approach to building development
-environment}
+\section{LSP and distributed approach to building development environment}
 \label{sec:review_3}
+Учитывая вышеизложенное, в настоящее время мы имеем прочную основу для обеспечения хорошего инструментария, 
+основанного на семантическом анализе: методов представления семантического представления исходного кода программного обеспечения 
+и его оценки в соответствии с потребностями клиентов.
 
-Considering the things discussed above, nowadays we have a solid basis to
-provide a good tooling based on semantic analysis: methods to represent
-software source code`s Semantic Representation and evaluate it accordingly to
-clients` needs.
+Современные IDE применяют эти методы для предоставления достойного сервиса, но все же существует проблема: 
+эти программные продукты используют свои собственные реализации компиляторов, обычно несвободные и не связанные с командой разработчиков исходного языка. 
+Это подразумевает набор проблем, отмеченных в \ref{sec: review_1}.
 
-Modern IDEs apply those methods to deliver a decent service, but still there is a
-problem: those software products use their own implementations of compilers,
-usually proprietary and unrelated to the original language`s development team.
-It implies a set of problems noted in the \ref{sec:review_1}.
+Наличие хорошего современного компилятора, способного генерировать SR, делает вещи немного менее сложными, 
+но все же не решает проблему времени и стоимости реализации IDE для конкретного языка.
 
-Having a good modern compiler capable of generating an SR makes things a bit
-less complicated but still doesn`t solve the language-specific IDE
-implementation time and cost problem.
-
-Obviously, these problems are not unique for the IDE class of products, but for
-any big monolithic architecture, and the solution may be pretty straightforward:
-if we can lower the bonding of the system and represent a development
-environment as a set of tools instead of one integrated solution, we can
-distribute the IDE implementation to have a set of disjointed modules:
+Очевидно, что эти проблемы не являются уникальными для класса продуктов IDE, но для любой большой монолитной архитектуры, 
+и решение может быть довольно простым: если мы можем снизить связывание системы и представить среду разработки в виде набора инструментов 
+вместо одного интегрированного решения, мы можем распределить реализацию IDE, чтобы иметь набор несвязанных модулей:
 \begin{itemize}
     \item An editor
     \item Compiler to SR

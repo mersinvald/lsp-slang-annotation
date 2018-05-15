@@ -10,7 +10,9 @@
   \put(\dimexpr\paperwidth-1cm\relax,-1.5cm){\makebox[0pt][r]{\includegraphics[width=3cm]{figs/inno.jpg}}}%
 }}
 
-\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[russian]{babel}
 \usepackage{blindtext}
 
 \newenvironment{bottompar}{\par\vspace*{\fill}}{\clearpage}
@@ -51,7 +53,6 @@
 \usepackage[font=singlespacing, labelfont=bf]{caption}
 \usepackage[parfill]{parskip}
 
-\usepackage[utf8]{inputenc}
 \usepackage{makecell}
 
 \usepackage{minted}
@@ -126,10 +127,8 @@ backend=bibtex      % biber or bibtex
 \newpage
 \include{abstract}
 
-\include{chapter1}
 \include{chapter2}
 \include{chapter3}
-\include{chapter4}
 \include{chapter5}
 \include{chapter6}
 
@@ -137,7 +136,4 @@ backend=bibtex      % biber or bibtex
 \newpage
 \printbibliography
 
-\newpage
-\include{appendix_a}
-\include{acknowledgements}
 \end{document}

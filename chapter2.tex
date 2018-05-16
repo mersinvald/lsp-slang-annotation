@@ -111,52 +111,44 @@ And an open SP format can be a solution to potential problems: ``open formats
 и решение может быть довольно простым: если мы можем снизить связывание системы и представить среду разработки в виде набора инструментов 
 вместо одного интегрированного решения, мы можем распределить реализацию IDE, чтобы иметь набор несвязанных модулей:
 \begin{itemize}
-    \item An editor
-    \item Compiler to SR
-    \item SR clients (described in \ref{sec:review_1})
-    \item Protocol between an editor and the language-specific part
+    \item Редактор кода
+    \item Комилятор, предоставляющий семантическое представление
+    \item Клиенты семантического представления (см. \ref{sec:review_1})
+    \item Протокол, объединяющий клиенты и компилятор
 \end{itemize}
 \newpage
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{figs/lsp.png}
-    \caption{Language Server Protocol}
+    \caption{Протокол, объединяющий клиенты и компилятор}
 \end{figure}
 
-The last one have not been introduced yet: the protocol to connect any
-third-party tool to the language infrastructure, achieving a decent IDE-like
-functionality without its maintenance and development costs
+Описанный протокол уже существует -- Протокол Языкового Сервера удовлетворяет потребность в подключении сторонних инструментов, давая возможность
+реализовать функциональность полноценной IDE, избегая расходы на содержание и развитие отдельного монолитного программного продукта.
 
-Language Server and Language Server Protocol introduced by Microsoft in 2016
-represent a development environment as two disjoint parties:
+Языковой Сервер и ротокол языкового сервера, разработанные корпорацией Microsoft в 2016 году, предлагает представить среду разработки как две слабо связанные стороны:
 \begin{itemize}
-    \item Language Servers to implement all the SR analysis things
-    \item Clients as editors or other development tools using the LSP to communicate with Language Servers \cite{Sourcegraph}
+    \item Языковой Сервер, реализующий анализ семантического представления и основанные на нём утилиты.
+    \item Клиенты, в качестве которых выступают редаеторы кода и другие инструменты разработчика, использующие протокол языкового сервера для связи с языковым сервером\cite{Sourcegraph}.
 \end{itemize}
 
-\section{Conclusion}
+\section{Заключение}
 \label{sec:review_conclusion}
+Обычные компиляторы с монолитной архитектурой, которые хороши только при генерации исполняемого кода, 
+трудно интегрировать в современную среду разработки, поскольку они не разделяют семантическое представление исходного кода, 
+поэтому для разработки хорошей IDE необходимо написать свой собственный исходный код компилятору семантического представления.
 
-Conventional compilers with a monolithic architecture, that are only good at executable code generation,
-are hard to integrate into a modern development environment as they do not share
-semantic representation of the source code, thus to develop a good IDE one must write their own
-source code to Semantic Representation compiler.
+Современный компилятор (который предоставояет промежуточное представление высокого уровня) --- это большой шаг к упрощению разработки утилит разработчика, 
+дающий большие преимущества в затратах времени и финансов в сочетании с распределенной архитектурой IDE, разделяющей редактор и набор инструментов для анализа семантики языка 
+на две непересекающиеся части и связывая их через стандартизированный протокол.
 
-A modern compiler (that does share a high-level intermediate representation) is
-a big step towards simpler language toolings and it can become even more convenient
-combined with a distributed IDE architecture that splits an editor and the language toolchain
-into two disjoint parts, linking them via a standardized protocol.
+Такой подход дает разработчикам языка большие возможности для развития инфраструктуры языка,
+которые могут предоставить набор инструментов анализа через языковой сервер, 
+а также дает возможность способ экспериментировать с новыми и существующими методами семантического анализа.
+Например, База Знаний о ПО\cite{Wanghong}, описанная Бертраном Мейером, может быть реализована как модуль языкового сервера,
+в качестве альтернативы подходу, выбранному авторами в 1985 году: интеграция инструментов анализа в редактор не представлялась возможной в то время, 
+а это именно то для чего языковой сервер подходит наилучшим образом.
 
-This approach gives language developers a great opportunity to make use of an
-existing development infrastructure, providing their Language Server for a
-giant set of development tools, as well as a way to fearlessly experiment with new and
-existing analysis techniques, e.g. a Software Knowledge Base\cite{Wanghong}, described by
-Bertrand Meyer, may be implemented as a language server module, as an
-alternative approach to the one selected by the original author in 1985:
-integration of analysis tool into an editor was not possible back then, but this is
-the exact thing that LSP is good for now.
-
-Concluding, the Language Server may be considered to be the most feasible
-solution to rapidly bootstrap rich development infrastructure for aspiring new
-languages, with a broad path to evolve further.
+В заключение следует отметить, что языковой сервер может быть рассмотрен как наиболее приемлемое решение для быстрого развертывания богатой инфраструктуры языка,
+что особенно важно для новых языков программирования.

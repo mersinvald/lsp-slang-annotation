@@ -1,54 +1,51 @@
-\chapter{Methodology and architecture}
+\chapter{Методология и архитектура}
 \label{chap:met}
 
-\section{Compiler integration}
+\section{Интеграция копилятора}
 \label{sec:met:ls_compiler_interop}
-The Language Server idea is to launch the LS instance in the same project directory
-opened in the editor, and connect it to the editor via Language Server Protocol.
+Идея Языкового Сервера заключается в том, чтобы запускать экземпляр ЯС в том же каталоге проекта, который открыт в редакторе, и в подключении его к редактору по протоколу ЯС.
 
-A Language Server is responsible for language-specific editor features,
-it works on the language Semantic Representation and other metadata
-to perform semantic analysis and consequently provide the editor with usable data in the agreed format via Language Server Protocol.
-As Language server heavily relies on the modern compiler, that exposes the SR,
-we need to implement a way to integrate compiler into the Language Server and to enable their inter-operation.
+Языковой сервер отвечает за реализацию функций редактора по работе с кодом, он оперирует над семантическим представлением языка и другими метаданными, 
+нужными для осуществения семантического анализа и, следовательно, предоставляет редактору данные в согласованном формате через протокол языкового сервера. 
+Поскольку языковой сервер в значительной степени полагается на современный компилятор, который предоставляет SR, 
+нам нужно реализовать способ интеграции компилятора в языковой сервер и обеспечить их взаимодействие.
 
-There are two possible ways to achieve that: either use the compiler as a library or invoke it in a separate process,
-feeding specific command line arguments.\ref{table:met:compiler_integration}
+Это можно сделать двумя способами: либо использовать компилятор в качестве библиотеки, 
+либо вызывать его в отдельном процессе, передавая компилятору требуемые аргументы командной строки.\ref{table:met:compiler_integration}
 \begin{table}[H]
     \centering
     \begin{tabular}{|c|c|}
         \hline
-        \textbf{invoking as a command} & \textbf{using compiler as a library} \\
+        \textbf{вызов команды} & \textbf{подключение через API} \\
         \hline
-        \makecell{simpler integration} & \makecell{harder integration} \\
+        \makecell{более простая интеграция} & \makecell{сложная интеграция} \\
         \hline
-        \makecell{very limited invocation options} & \makecell{complex invocation strategies \\ may be expressed} \\
+        \makecell{ограниченное количество опций вызова} & \makecell{возможность выражать сложные \\стратегии интеграции} \\
         \hline
-        \makecell{need to (de)serialize data} & \makecell{can exchange binary data} \\
+        \makecell{необходисомть в разборе формата} & \makecell{возможность обмениваться \\типами данных компилятора} \\
         \hline
-        \makecell{need to implement IR traversal \\ in the LS} & \makecell{compiler can expose \\AST traversal API} \\
+        \makecell{необходимость реализации своего \\API обхода семантического представления} & \makecell{компилятор может экспортировать \\API обхода представления} \\
         \hline
-        \makecell{need to describe compiler \\ internal data types in the LS} & \makecell{compiler can expose \\ internal data types} \\
+        \makecell{необходимость описания типов данных \\компилятора в языковом сервере} & \makecell{компилятор может экспортировать \\внутренние типы данных} \\
         \hline
     \end{tabular}
-    \caption{Compiler integration methods comparison}
+    \caption{Сравнение методик интеграции компилятора в языковой сервер}
     \label{table:met:compiler_integration}
 \end{table}
 
-Since the SLang\cite{Zouev2017} compiler does not expose any AST traversal API or internal data types, most of
-the traits specific to an ``integration as a library" option will not be used in our case.
-Moreover, the compiler provides a stable JSON-formatted SR, which, being a text-serialized format,
-can be easily transferred via an operating system channel like standard output\cite{TheOpenGroup1997}.
+Поскольку компилятор SLang\cite{Zouev2017} не предоставляет API обхода AST или внутренних типов данных, большинство преимуществ, 
+характерных для опции "подключение через API", не применимы в нашем случае. 
+Кроме того, компилятор предоставляет стабильное семантическое представление в формате JSON, который, 
+будучи стандартизированным текстомым форматом, может быть легко передан через канал операционной системы, такой как standard output\cite{TheOpenGroup1997}.
 
-This way, we get a number of convenient features: the compiler can be invoked by our Language Server as a command call,this option
-is easier to implement on both Language Server and compiler sides.
-And since we are not limited with any functionality that would require ``compiler as a library" traits,
-we can declare this way of integration the most feasible in our case and stick to it.\ref{fig:met:compiler_integration}
-
+Таким образом, мы получаем ряд удобных свойств, компилятор может быть вызван нашим языковым сервером как команда, 
+этот вариант легче реализовать как на сервере языка, так и на стороне компилятора. 
+И поскольку мы не ограничены какой-либо функциональностью, которая требовала бы подключения компилятора через API, 
+мы можем считать этот способ интеграции наиболее уместным в нашем случае и придерживаться его.\ref{fig:met:compiler_integration}
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{figs/compiler_integration.png}
-    \caption{Workflow with Language Server and compiler}
+    \caption{Взаимодествие компилятора с языкомым сервером}
     \label{fig:met:compiler_integration}
 \end{figure}
 
@@ -210,10 +207,7 @@ Hereby, we have two types of modules:
     \label{fig:met:modules_sd}
 \end{figure}
 
-Summing up, now we have a way to integrate the compiler into the Language Server, powerful extensible architecture
-that allows to throw in additional functionality for the Language Server,
-and modules hierarchy to start designing the core modules for the Language Server Protocol methods, as well as
-the external ones to perform actual analysis and supply Language Server Clients with the source code insights.
+Summing up, now we have a way to integrate the compiler into the Language Server, powerful extensible architecture that allows to throw in additional functionality for the Language Server, and modules hierarchy to start designing the core modules for the Language Server Protocol methods, as well as the external ones to perform actual analysis and supply Language Server Clients with the source code insights.
 
 \section{Development Plan}
 To implement a complex system it is vital to split the work into phases and introduce

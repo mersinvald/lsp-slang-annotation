@@ -49,74 +49,74 @@
     \label{fig:met:compiler_integration}
 \end{figure}
 
-\section{Language Server Extensible Architecture}
+\section{Расширяемая архитектура языкового сервера}
 \label{sec:met:arch}
-The main idea of this research is to bring architecture of Language Servers to the next level,
-make it modular and extensible, thus allowing third parties to throw in additional functionality for the SLang tooling
-with no need to hack into the Language Server code.
+Основная идея данного исследования заключается в том, чтобы вывести архитектуру языковых серверов на новый уровень, сделать ее модульной и расширяемой, 
+тем самым позволив третьим лицам добавлять дополнительный функционал для инструментария языка SLang без необходимости вмешиваться в код языкового сервера.
 
-Therefore, the architecture of the SLang Language Server is divided into two aggregate components: \ref{fig:met:ls_highlevel_arch}
+Таким образом, архитектуру языкового сервера языка SLang можно разделить два агрегатных компонента:\ref{fig:met:ls_highlevel_arch}
 \begin{itemize}
-    \item The Core
-    \item Module System
+    \item Ядро
+    \item Система модулей
 \end{itemize}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.3\textwidth]{figs/highlevel_architecture.pdf}
-    \caption{Language Server High-level Architecture}
+    \caption{Высокоуровневая архитектура языкового сервера}
     \label{fig:met:ls_highlevel_arch}
 \end{figure}
 
 \subsection{Language Server Core}
 \label{sec:met:arch:core}
-Language Server Core is a basement level of the Language Server on which Language Server Modules will operate.
-Responsibilities of LS Core include:
+Ядро языкового сервера --- это базовый уровень языкового сервера, на котором будут работать модули языкового сервера.
+Обязанности ядра включают:
 \begin{itemize}
-    \item LS Client connection maintenance
-    \item Module registry maintenance
-    \item Routing of incoming requests and data control flow between modules
+    \item Поддержание соединения с клиентами языкового сервера
+    \item Поддержание реестра модулей
+    \item Маршрутизация запросов и данных между модулями
 \end{itemize}
 
-Each of these responsibilities we shall describe in detail below.
+Каждую из этих обязанностей мы подробно опишем ниже.
 
-\subsubsection{Client connection maintenance}
+\subsubsection{Поддержание соединения с клиентами}
 \label{sec:met:arch:core:connection_maintenance}
-According to the Language Server Protocol\cite{Sourcegraph}, the client controls the lifetime of a server,
-i.e starts it and shuts the server down on demand. After startup, the client connects to the server
-using one of the transports. Since the transport level is not constrained by the LSP, specific transport can vary in different implementations.
+Согласно протоколу сервера языка\cite{Sourcegraph}, клиент управляет временем жизни сервера, то есть запускает его и выключает сервер по требованию. 
+После запуска, клиент подключается к серверу с помощью одного из видов транспорта. 
+Поскольку транспортный уровень не ограничен стандартом протокола, конкретный вид транспорта может быть отличен в разных реализациях.
 
-Language Server Core should support several types of transport and be able to operate on them to accept requests and respond to the client. The list of widely used transports we are going to implement is
+Ядро языкового сервера должено поддерживать несколько типов транспорта и уметь работать с ними, принимать запросы и отвечать на них клиенту. 
+Список широко используемых транспортных средств, которые мы собираемся внедрить:
 \begin{itemize}
     \item stdin/stdout
     \item TCP
     \item UDP
 \end{itemize}
-Implementing that list will supply the most of LSP clients with an option of how to work with the SLang Language Server.
 
-\subsubsection{Module Registry}
+Реализация этого списка предоставит большинству клиентов возможность работать с языковым сервером SLang по их встроенному транспорту.
+
+\subsubsection{Реестр модулей}
 \label{sec:met:arch:core:module_registry}
 
-To be a foundation for an extensible modular architecture Language Server Core needs to have a subsystem
-for module registering, maintenance and inter-operation organization.
+Чтобы стать основой расширяемой модульной архитектуры, ядру сервера необходима подсистема регистрации модулей, их обслуживания и организации межмодульного взаимодействия.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.7\textwidth]{figs/registry.pdf}
-    \caption{Module Registry API}
+    \caption{API реестра модулей}
     \label{fig:met:registry_methods}
 \end{figure}
 
 \newpage
-The registry should register a module and share its status, as well as information on how to launch and connect
-internal (core) and external modules. On startup, the registry should initialize its state using a predefined directory
-containing configuration files. Afterwards, it should maintain an API to load and unload additional modules via LSP.
-Consequently, we need to extend the LSP with additional commands for the modules registry:\ref{fig:met:registry_methods}
 
+Реестр регистрирует модуль, имеет API для получения статуса модуля, а также API для запуска и подключения внутренних (основных) и внешних модулей. 
+При запуске реестр должен инициализировать свое состояние, руководствуясь данными из определенной директории, содержащей файлы конфигурации. 
+Помимо этого он должен предоставлять API для загрузки и выгрузки дополнительных модулей через протокол языкового сервера. 
+Следовательно, нам нужно расширить протокол дополнительными командами для реестра модулей:\ref{fig:met:registry_methods}
 \begin{itemize}
-    \item registryCtl/load: register the module.
-    \item registryCtl/unload: unregister the module.
-    \item registryCtl/status: query module status.
+    \item registryCtl/load: регистрация/загрузка модуля.
+    \item registryCtl/unload: выгрузка модуля.
+    \item registryCtl/status: получение статуса модуля.
 \end{itemize}
 
 \subsubsection{Dispatcher and data flow control}
